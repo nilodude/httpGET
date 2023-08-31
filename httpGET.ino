@@ -47,18 +47,17 @@ void downloadFlama(){
         return;
       }
     
-      Serial.print("JSON object = ");
-      Serial.println(myObject);
-    
+      Serial.println(myObject["data"]["bytes"]);
+
       // myObject.keys() can be used to get an array of all the keys in the object
-      JSONVar keys = myObject.keys();
-    
-      for (int i = 0; i < keys.length(); i++) {
-        JSONVar value = myObject[keys[i]];
-        Serial.print(keys[i]);
-        Serial.print(" = ");
-        Serial.println(value);
-      }
+//      JSONVar keys = myObject.keys();
+//    
+//      for (int i = 0; i < keys.length(); i++) {
+//        JSONVar value = myObject[keys[i]];
+//        Serial.print(keys[i]);
+//        Serial.print(" = ");
+//        Serial.println(value);
+//      }
       downloaded = true;
     }
     else {
