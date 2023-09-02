@@ -108,17 +108,31 @@ String httpGETRequest(const char* url) {
     int frameNum = 0;
     int charNum = 0;
     int rowIndex = 0;
-    
+    byte row = 0;
+    int rowBin = 0;
     while (stream.available()){
       char c = stream.read();
       
       if(c != '[' && c != ',' && c !=']'){
-         llamita[frameNum][rowIndex] = c - '0';
+         row = byte(c - '0');
+
+         uint8_t bitsCount = sizeof( row ) * 8;
+         char str[ bitsCount + 1 ];
+
+         uint8_t i = 0;
+         while ( bitsCount-- ){
+           str[ i++ ] = bitRead( row, bitsCount ) + '0';
+         }
+         str[ i ] = '\0';
+         Serial.println(str);
+         
+         llamita[frameNum][rowIndex] = row;
+         //llamita[frameNum][rowIndex] = byte(c - '0');
       }
       
       responseC[charNum] = c;
       charNum++;
-      Serial.print(c);
+      //Serial.print(c);
       if(c == ']'){
         frameNum++;
         Serial.println();
