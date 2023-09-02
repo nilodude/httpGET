@@ -116,6 +116,7 @@ String httpGETRequest(const char* url) {
       char c = stream.read();
       
       if(c != '[' && c != ',' && c !=']'){
+         // probably char to int conversion is wrong
          row = byte(c - '0');
 
          uint8_t bitsCount = sizeof( row ) * 8;
