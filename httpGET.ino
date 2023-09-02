@@ -11,13 +11,13 @@
 #define DATA_PIN  17 
 #define CS_PIN    16 
 
-#define numFrames 300
+#define numFrames 200
 
 MD_MAX72XX matrix = MD_MAX72XX(HARDWARE_TYPE, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
 
 int cols = 8;
 
-char* getFlama = "http://192.168.1.89:8080/flama?numFrames=300";
+char* getFlama = "http://192.168.1.89:8080/flama?numFrames=200";
 char* getNumFrames = "http://192.168.1.89:8080/numframes";
 
 WiFiClient client;
@@ -26,7 +26,9 @@ char responseC[17000];
 String response ="";
 bool downloaded, parsed = false;
 
-byte llamita[numFrames][16]={};
+byte llamita[numFrames][16]={
+
+};
 
 void setup() {
     
