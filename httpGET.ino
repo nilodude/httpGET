@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
-#include <ArduinoJson.h>
 #include <MD_MAX72xx.h>
 #include <SPI.h>
 
@@ -86,35 +85,10 @@ void downloadFlama(){
   if(WiFi.status()== WL_CONNECTED){
     response = httpGETRequest(getFlama);
     downloaded = true;
-    //parseJsonBody();
   }else{
     Serial.println("WiFi Disconnected");
   }
 }
-
-//void parseJsonBody(){
-//  DynamicJsonDocument doc(131072);
-//  DeserializationError err = deserializeJson(doc, responseC);
-//      
-//  if (err) {
-//    Serial.print(F("deserializeJson() returned "));
-//    Serial.println(err.f_str());
-//    return;
-//  }
-//  
-//  JsonArray by = doc["bytes"];
-//     
-//  for (int i = 0; i < by.size(); i++) {
-//    JsonArray frame = by[i];
-//    for(int j = 0; j < frame.size(); j++){
-//      int row = frame[j];
-//      Serial.print(row);
-//      llamita[i][j] = row;
-//    }
-//    Serial.println();
-//  }
-//  parsed = true;
-//}
 
 String httpGETRequest(const char* url) {
   
