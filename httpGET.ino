@@ -12,17 +12,18 @@
 #define DATA_PIN  17 
 #define CS_PIN    16 
 
-#define numFrames 20
+#define numFrames 300
 
 MD_MAX72XX matrix = MD_MAX72XX(HARDWARE_TYPE, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
 
 int cols = 8;
 
-char* getFlama = "http://192.168.1.89:8080/flama?numFrames=20";
+char* getFlama = "http://192.168.1.89:8080/flama?numFrames=300";
 char* getNumFrames = "http://192.168.1.89:8080/numframes";
 
 WiFiClient client;
 HTTPClient http;
+char responseC[17000];
 String response ="";
 bool downloaded, parsed = false;
 
@@ -38,13 +39,13 @@ void setup() {
     cols = matrix.getColumnCount();
 }
 void updateNumFrames(){
-  response = httpGETRequest(getFlama);
+  //responseFrames = httpGETRequest(getNumFrames);
 }
 
 
 void setupWifi(){
   Serial.begin(115200);
-  WiFi.begin("", "");
+  WiFi.begin("MiFibra-9E00", "t0rs0t0rs0");
   Serial.println("Connecting");
   while(WiFi.status() != WL_CONNECTED) {
     delay(500),
@@ -92,8 +93,8 @@ void downloadFlama(){
 }
 
 void parseJsonBody(){
-  DynamicJsonDocument doc(12288);
-  DeserializationError err = deserializeJson(doc, response);
+  DynamicJsonDocument doc(131072);
+  DeserializationError err = deserializeJson(doc, responseC);
       
   if (err) {
     Serial.print(F("deserializeJson() returned "));
@@ -115,16 +116,44 @@ void parseJsonBody(){
   parsed = true;
 }
 
-String httpGETRequest(const char* serverName) {
-  http.begin(serverName);
+String httpGETRequest(const char* url) {
+  
+  http.begin(url);
+  http.addHeader("Transfer-Encoding", "chunked");
   int httpResponseCode = http.GET();
   
   String payload = "{}"; 
   
   if (httpResponseCode>0) {
-    Serial.print("HTTP Response code: ");
+    Serial.print("HTTP Status: ");
     Serial.println(httpResponseCode);
-    payload = http.getString();
+   
+    WiFiClient& stream = http.getStream();
+    Serial.println("printing response stream: ");
+
+    int frameNum = 0;
+    int charNum = 0;
+    while (stream.available()){
+      char c = stream.read();
+      responseC[charNum] = c;
+      charNum++;
+      Serial.print(c);
+      if(c == ']'){
+        frameNum++;
+        Serial.println();
+      }else if(c == '}'){
+        Serial.println();
+      }
+    }
+    Serial.println();
+    
+    Serial.print("parsed ");
+    Serial.print(charNum);
+    Serial.println(" characters,");
+    Serial.print(--frameNum);
+    Serial.println(" frames");
+    //payload = http.getString();
+     
   }
   else {
     Serial.print("Error code: ");
