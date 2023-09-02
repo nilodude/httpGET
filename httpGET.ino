@@ -117,13 +117,15 @@ String httpGETRequest(const char* url) {
       
       if(c != '[' && c != ',' && c !=']'){
          // probably char to int conversion is wrong
-         row = byte(c - '0');
+         // of course its wrong, CONVERTING CHARS ONE BY ONE, NEED TO PACK THEM INTO 1, 2, OR 3 DIGIT NUMBERS!!!!!!!!!!!!!!!
+         row = byte(c);
 
          uint8_t bitsCount = sizeof( row ) * 8;
          char str[ bitsCount + 1 ];
 
          uint8_t i = 0;
          while ( bitsCount-- ){
+           //str[ i++ ] = bitRead( row, bitsCount ) + '0';
            str[ i++ ] = bitRead( row, bitsCount ) + '0';
          }
          str[ i ] = '\0';
