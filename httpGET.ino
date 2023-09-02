@@ -61,7 +61,7 @@ void loop() {
     downloadFlama();
   }
 
-  if(parsed){
+  if(downloaded){
     drawFlama();
   }
 }
@@ -86,35 +86,35 @@ void downloadFlama(){
   if(WiFi.status()== WL_CONNECTED){
     response = httpGETRequest(getFlama);
     downloaded = true;
-    parseJsonBody();
+    //parseJsonBody();
   }else{
     Serial.println("WiFi Disconnected");
   }
 }
 
-void parseJsonBody(){
-  DynamicJsonDocument doc(131072);
-  DeserializationError err = deserializeJson(doc, responseC);
-      
-  if (err) {
-    Serial.print(F("deserializeJson() returned "));
-    Serial.println(err.f_str());
-    return;
-  }
-  
-  JsonArray by = doc["bytes"];
-     
-  for (int i = 0; i < by.size(); i++) {
-    JsonArray frame = by[i];
-    for(int j = 0; j < frame.size(); j++){
-      int row = frame[j];
-      Serial.print(row);
-      llamita[i][j] = row;
-    }
-    Serial.println();
-  }
-  parsed = true;
-}
+//void parseJsonBody(){
+//  DynamicJsonDocument doc(131072);
+//  DeserializationError err = deserializeJson(doc, responseC);
+//      
+//  if (err) {
+//    Serial.print(F("deserializeJson() returned "));
+//    Serial.println(err.f_str());
+//    return;
+//  }
+//  
+//  JsonArray by = doc["bytes"];
+//     
+//  for (int i = 0; i < by.size(); i++) {
+//    JsonArray frame = by[i];
+//    for(int j = 0; j < frame.size(); j++){
+//      int row = frame[j];
+//      Serial.print(row);
+//      llamita[i][j] = row;
+//    }
+//    Serial.println();
+//  }
+//  parsed = true;
+//}
 
 String httpGETRequest(const char* url) {
   
@@ -133,8 +133,15 @@ String httpGETRequest(const char* url) {
 
     int frameNum = 0;
     int charNum = 0;
+    int rowIndex = 0;
+    
     while (stream.available()){
       char c = stream.read();
+      
+      if(c != '[' && c != ',' && c !=']'){
+         llamita[frameNum][rowIndex] = c - '0';
+      }
+      
       responseC[charNum] = c;
       charNum++;
       Serial.print(c);
@@ -143,16 +150,19 @@ String httpGETRequest(const char* url) {
         Serial.println();
       }else if(c == '}'){
         Serial.println();
+      }else if(c== ','){
+        rowIndex++;
+      }else if(c == '['){
+        rowIndex = 0;
       }
     }
     Serial.println();
     
     Serial.print("parsed ");
     Serial.print(charNum);
-    Serial.println(" characters,");
+    Serial.print(" characters, ");
     Serial.print(--frameNum);
     Serial.println(" frames");
-    //payload = http.getString();
      
   }
   else {
