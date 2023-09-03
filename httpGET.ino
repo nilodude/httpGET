@@ -111,15 +111,17 @@ String httpGETRequest(const char* url) {
     int charNum = 0;
     int rowIndex = 0;
     byte row = 0;
-    int rowBin = 0;
+    char rowChar[3] = "";
+    int charIndex = 0;
+    
     while (stream.available()){
       char c = stream.read();
       
       if(c != '[' && c != ',' && c !=']'){
-         // probably char to int conversion is wrong
-         // of course its wrong, CONVERTING CHARS ONE BY ONE, NEED TO PACK THEM INTO 1, 2, OR 3 DIGIT NUMBERS!!!!!!!!!!!!!!!
-         row = byte(c);
-
+         rowChar[charIndex++] = c;
+                  
+         row = byte(atoi(rowChar));
+         
          uint8_t bitsCount = sizeof( row ) * 8;
          char str[ bitsCount + 1 ];
 
@@ -132,7 +134,7 @@ String httpGETRequest(const char* url) {
          Serial.println(str);
          
          llamita[frameNum][rowIndex] = row;
-         //llamita[frameNum][rowIndex] = byte(c - '0');
+         
       }
       
       responseC[charNum] = c;
@@ -140,11 +142,19 @@ String httpGETRequest(const char* url) {
       //Serial.print(c);
       if(c == ']'){
         frameNum++;
-        Serial.println();
-      }else if(c == '}'){
+        charIndex = 0;
+        rowChar[0]='\0';
+        rowChar[1]='\0';
+        rowChar[2]='\0';
         Serial.println();
       }else if(c== ','){
+        //Serial.println(rowChar);
+        //Serial.println(row,BIN);
         rowIndex++;
+        charIndex = 0;
+        rowChar[0]='\0';
+        rowChar[1]='\0';
+        rowChar[2]='\0';
       }else if(c == '['){
         rowIndex = 0;
       }
