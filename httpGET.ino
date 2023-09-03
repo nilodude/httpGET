@@ -29,7 +29,11 @@ byte llamita[numFrames][16]={
 
 };
 
-unsigned int delayFrames = round(numFrames/75);
+/*
+  delayFrames = 5 ms for 374 frames
+  delayFrames = 8 ms for 200 frames
+ */
+unsigned int delayFrames = 8;
 
 void setup() {
     setupWifi();
@@ -72,14 +76,14 @@ void drawFlama(){
     for (int i = 0; i < cols; i++ ) {
         matrix.setColumn(i, llamita[j][cols-1-i]);
     }
-    delay(5);
+    delay(8);
   }  
-  delay(5);
+  delay(8);
   for ( int j = numFrames-2; j >= 0; j-- ) {
     for (int i = 0; i < cols; i++ ) {
         matrix.setColumn(i, llamita[j][cols-1-i]);
     }
-    delay(5);
+    delay(8);
   }  
 }
 
