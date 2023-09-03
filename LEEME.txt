@@ -1,0 +1,4 @@
+https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json;
+estaba puesto en el additional board manager urls, funcionaba todo menos el timeout del HttpClient.h,
+voy a proba otro enlace de arduino-esp32 que tiene mejor pinta:
+https://espressif.github.io/arduino-esp32/package_esp32_index.json
