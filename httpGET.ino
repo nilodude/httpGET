@@ -22,9 +22,8 @@ char* getNumFrames = "http://192.168.1.89:8080/numframes";
 
 WiFiClient client;
 HTTPClient http;
-char responseC[17000];
-String response ="";
-bool downloaded, parsed = false;
+
+bool downloaded = false;
 
 byte llamita[numFrames][16]={
 
@@ -40,10 +39,10 @@ void setup() {
     matrix.clear();
     cols = matrix.getColumnCount();
 }
+
 void updateNumFrames(){
   //responseFrames = httpGETRequest(getNumFrames);
 }
-
 
 void setupWifi(){
   Serial.begin(115200);
@@ -86,71 +85,48 @@ void drawFlama(){
 
 void downloadFlama(){
   if(WiFi.status()== WL_CONNECTED){
-    response = httpGETRequest(getFlama);
-    downloaded = true;
+    parseHTTPStream(getFlama);
   }else{
     Serial.println("WiFi Disconnected");
   }
 }
 
-String httpGETRequest(const char* url) {
+void parseHTTPStream(const char* url) {
   
   http.begin(url);
   http.addHeader("Transfer-Encoding", "chunked");
   int httpResponseCode = http.GET();
-  
-  String payload = "{}"; 
-  
+    
   if (httpResponseCode>0) {
     Serial.print("HTTP Status: ");
     Serial.println(httpResponseCode);
    
     WiFiClient& stream = http.getStream();
-    Serial.println("printing response stream: ");
-
-    int frameNum = 0;
+    
     int charNum = 0;
+    int frameIndex = 0;
     int rowIndex = 0;
+    int charIndex = 0;
     byte row = 0;
     char rowChar[3] = "";
-    int charIndex = 0;
     
     while (stream.available()){
+      charNum++;
       char c = stream.read();
       
       if(c != '[' && c != ',' && c !=']'){
          rowChar[charIndex++] = c;
-                  
          row = byte(atoi(rowChar));
-         
-         uint8_t bitsCount = sizeof( row ) * 8;
-         char str[ bitsCount + 1 ];
-
-         uint8_t i = 0;
-         while ( bitsCount-- ){
-           //str[ i++ ] = bitRead( row, bitsCount ) + '0';
-           str[ i++ ] = bitRead( row, bitsCount ) + '0';
-         }
-         str[ i ] = '\0';
-         //Serial.println(str);
-         
-         llamita[frameNum][rowIndex] = row;
-         
+         llamita[frameIndex][rowIndex] = row;
       }
       
-      responseC[charNum] = c;
-      charNum++;
-      //Serial.print(c);
       if(c == ']'){
-        frameNum++;
+        frameIndex++;
         charIndex = 0;
         rowChar[0]='\0';
         rowChar[1]='\0';
         rowChar[2]='\0';
-        Serial.println();
       }else if(c== ','){
-        Serial.println(rowChar);
-        Serial.println(row,BIN);
         rowIndex++;
         charIndex = 0;
         rowChar[0]='\0';
@@ -160,14 +136,15 @@ String httpGETRequest(const char* url) {
         rowIndex = 0;
       }
     }
-    Serial.println();
     
+    Serial.println();
     Serial.print("parsed ");
     Serial.print(charNum);
     Serial.print(" characters, ");
-    Serial.print(--frameNum);
+    Serial.print(--frameIndex);
     Serial.println(" frames");
-     
+    
+    downloaded = true;
   }
   else {
     Serial.print("Error code: ");
@@ -175,6 +152,4 @@ String httpGETRequest(const char* url) {
   }
   // Free resources
   //http.end();
-
-  return payload;
 }
