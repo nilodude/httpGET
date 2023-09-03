@@ -11,13 +11,13 @@
 #define DATA_PIN  17 
 #define CS_PIN    16 
 
-#define numFrames 200
+#define numFrames 230
 
 MD_MAX72XX matrix = MD_MAX72XX(HARDWARE_TYPE, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
 
 int cols = 8;
 
-char* getFlama = "http://192.168.1.89:8080/flama?numFrames=200";
+char* getFlama = "http://192.168.1.89:8080/flama?numFrames=230";
 char* getNumFrames = "http://192.168.1.89:8080/numframes";
 
 WiFiClient client;
@@ -31,6 +31,7 @@ byte llamita[numFrames][16]={
 
 /*
   delayFrames = 5 ms for 374 frames
+  
   delayFrames = 8 ms for 200 frames
  */
 unsigned int delayFrames = 8;
@@ -76,14 +77,14 @@ void drawFlama(){
     for (int i = 0; i < cols; i++ ) {
         matrix.setColumn(i, llamita[j][cols-1-i]);
     }
-    delay(8);
+    delay(delayFrames);
   }  
-  delay(8);
+  delay(delayFrames);
   for ( int j = numFrames-2; j >= 0; j-- ) {
     for (int i = 0; i < cols; i++ ) {
         matrix.setColumn(i, llamita[j][cols-1-i]);
     }
-    delay(8);
+    delay(delayFrames);
   }  
 }
 
@@ -98,6 +99,7 @@ void downloadFlama(){
 void parseHTTPStream(const char* url) {
   
   http.begin(url);
+  http.setUserAgent("curl/7.74.0");
   http.addHeader("Transfer-Encoding", "chunked");
   int httpResponseCode = http.GET();
     
@@ -155,5 +157,5 @@ void parseHTTPStream(const char* url) {
     Serial.println(httpResponseCode);
   }
   // Free resources
-  //http.end();
+  http.end();
 }
