@@ -30,8 +30,9 @@ byte llamita[numFrames][16]={
 
 };
 
+unsigned int delayFrames = round(numFrames/75);
+
 void setup() {
-    
     setupWifi();
     updateNumFrames();
 
@@ -131,7 +132,7 @@ String httpGETRequest(const char* url) {
            str[ i++ ] = bitRead( row, bitsCount ) + '0';
          }
          str[ i ] = '\0';
-         Serial.println(str);
+         //Serial.println(str);
          
          llamita[frameNum][rowIndex] = row;
          
@@ -148,8 +149,8 @@ String httpGETRequest(const char* url) {
         rowChar[2]='\0';
         Serial.println();
       }else if(c== ','){
-        //Serial.println(rowChar);
-        //Serial.println(row,BIN);
+        Serial.println(rowChar);
+        Serial.println(row,BIN);
         rowIndex++;
         charIndex = 0;
         rowChar[0]='\0';
