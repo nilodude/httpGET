@@ -2,3 +2,13 @@ https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32
 estaba puesto en el additional board manager urls, funcionaba todo menos el timeout del HttpClient.h,
 voy a proba otro enlace de arduino-esp32 que tiene mejor pinta:
 https://espressif.github.io/arduino-esp32/package_esp32_index.json
+
+
+04/09/23:
+	-sigue sin funcionar bien el timeout del HTTPClient, pero hasta 290 frames se descarga OK
+	
+	-hay que implementar gestion de errores en caso de:
+		-no wifi
+		-no backend
+		-error parseando numFrames
+		-error parseando frames
