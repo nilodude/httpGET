@@ -13,16 +13,16 @@
 
 #define numFrames 270
 
+unsigned int updatedNumFrames = numFrames;
+
 MD_MAX72XX matrix = MD_MAX72XX(HARDWARE_TYPE, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
 
 int cols = 8;
 
-char* getFlamaURL = "http://192.168.1.89:8080/flama?numFrames=";
+String getFlamaURL = "http://192.168.1.89:8080/flama?numFrames=";
 char* getNumFramesURL = "http://192.168.1.89:8080/numFrames";
 
-const byte flamaUrlSize =  sizeof getFlamaURL + 3;
-char flamaURL[flamaUrlSize];
-
+char flamaURL[44];
 
 WiFiClient client;
 HTTPClient http;
@@ -49,8 +49,6 @@ void setup() {
     cols = matrix.getColumnCount();
 }
 
-
-
 void setupWifi(){
   Serial.begin(115200);
   WiFi.begin("MiFibra-9E00", "t0rs0t0rs0");
@@ -67,34 +65,27 @@ void updateNumFrames(){
   http.begin(getNumFramesURL);
   
   int httpResponseCode = http.GET();
-  char response[3];
+  String response="";
   
   if (httpResponseCode>0) {
-    Serial.print("HTTP Status: ");
+    Serial.println();
+    Serial.print("getNumFrames HTTP Status: ");
     Serial.println(httpResponseCode);
    
-    WiFiClient& stream = http.getStream();
-
-    int charIndex = 0;
-    while (stream.available()){
-      char c = stream.read();
-      if(charIndex < 3){
-        response[charIndex++] = c;
-      }
-    }
+    response = http.getString();
+    
+    Serial.println("updatedNumFrames: "+response);
+    updatedNumFrames = response.toInt();
   }else {
-    Serial.print("Error code: ");
+    Serial.print("getNumFrames Error code: ");
     Serial.println(httpResponseCode);
   }
   http.end();
   
-  strncpy(flamaURL, getFlamaURL, flamaUrlSize);
-  strncat(flamaURL, response, flamaUrlSize - strlen(flamaURL));
-  Serial.println(flamaURL);
+  String(getFlamaURL+response).toCharArray(flamaURL,getFlamaURL.length() + response.length()+1);
 }
 
 void loop() {
-    
   if(!downloaded){
     downloadFlama();
   }
@@ -106,20 +97,23 @@ void loop() {
 
 void downloadFlama(){
   if(WiFi.status()== WL_CONNECTED){
-    parseHTTPStream();
+    parseHTTPStream(flamaURL);
   }else{
     Serial.println("WiFi Disconnected");
   }
 }
 
-void parseHTTPStream() {
+void parseHTTPStream(const char* url) {
   
-  http.begin(flamaURL);
+  http.begin(url);
+  Serial.println();
+  Serial.print("getFlama request: ");
+  Serial.println(flamaURL);
   
   int httpResponseCode = http.GET();
     
   if (httpResponseCode>0) {
-    Serial.print("HTTP Status: ");
+    Serial.print("getFlama HTTP Status: ");
     Serial.println(httpResponseCode);
    
     WiFiClient& stream = http.getStream();
@@ -167,7 +161,7 @@ void parseHTTPStream() {
     
     downloaded = true;
   }else {
-    Serial.print("Error code: ");
+    Serial.print("getFlama Error code: ");
     Serial.println(httpResponseCode);
     downloaded = true;
   }
@@ -176,14 +170,14 @@ void parseHTTPStream() {
 }
 
 void drawFlama(){
-  for ( int j = 0; j < numFrames-1; j++ ) {
+  for ( int j = 0; j < updatedNumFrames-1; j++ ) {
     for (int i = 0; i < cols; i++ ) {
         matrix.setColumn(i, llamita[j][cols-1-i]);
     }
     delay(delayFrames);
   }  
   delay(delayFrames);
-  for ( int j = numFrames-2; j >= 0; j-- ) {
+  for ( int j = updatedNumFrames-2; j >= 0; j-- ) {
     for (int i = 0; i < cols; i++ ) {
         matrix.setColumn(i, llamita[j][cols-1-i]);
     }
