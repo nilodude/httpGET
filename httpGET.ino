@@ -11,7 +11,7 @@
 #define DATA_PIN  17 
 #define CS_PIN    16 
 
-#define numFrames 270
+#define numFrames 290
 
 unsigned int updatedNumFrames = numFrames;
 
@@ -38,7 +38,7 @@ byte llamita[numFrames][16]={
   
   delayFrames = 8 ms for 270 frames
  */
-unsigned int delayFrames = 8;
+unsigned int delayFrames = 9;
 
 void setup() {
     setupWifi();
