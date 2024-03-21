@@ -28,7 +28,7 @@ WiFiClient client;
 HTTPClient http;
 bool isWifiSetup = false;
 bool downloaded = false;
-bool offLine = false;
+bool offLine = true;
 
 byte llamita[numFrames][16]={
 {B00000000,B00000000,B00000000,B00000000,B00000000,B00000010,B00000111,B00001111,B00001111,B00001111,B00011111,B00011111,B00011111,B00011111,B00011110,B00011110},
@@ -414,6 +414,7 @@ void setupWifi(){
     Serial.print("Connected to WiFi network with IP Address: ");
     Serial.println(WiFi.localIP());
     isWifiSetup = true;
+    offLine = false;
   }
 }
 
