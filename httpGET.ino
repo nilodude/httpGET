@@ -19,8 +19,8 @@ MD_MAX72XX matrix = MD_MAX72XX(HARDWARE_TYPE, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEV
 
 int cols = 8;
 
-String getFlamaURL = "http://192.168.1.89:8080/flama?numFrames=";
-char* getNumFramesURL = "http://192.168.1.89:8080/numFrames";
+String getFlamaURL = "https://flama.hatthieves.es/flama?numFrames=";
+char* getNumFramesURL = "https://flama.hatthieves.es/numFrames";
 
 char flamaURL[44];
 
