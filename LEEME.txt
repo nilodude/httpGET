@@ -12,3 +12,9 @@ https://espressif.github.io/arduino-esp32/package_esp32_index.json
 		-no backend
 		-error parseando numFrames
 		-error parseando frames
+		
+
+21/03/24:
+	-hay que implementar un configurador offline para pasarle ssid, contraseña, y la config que sea
+	el configurador offline no es mas que otro microcontrolador que por i2c o lo que sea le mande datos y se guarden esas variables.
+	pero donde se guardan esas variables cuando se apaga el cacharro?  aaahi esta el royaso primo
